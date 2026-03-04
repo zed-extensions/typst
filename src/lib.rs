@@ -104,8 +104,14 @@ impl TypstExtension {
                 fs::read_dir(".").map_err(|e| format!("failed to list working directory {e}"))?;
             for entry in entries {
                 let entry = entry.map_err(|e| format!("failed to load directory entry {e}"))?;
-                if entry.file_name().to_str() != Some(&version_dir) {
-                    fs::remove_dir_all(&entry.path()).ok();
+                let path = entry.path();
+
+                if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
+                    // now it won't flush all the directory so that one could decide to dump logs in it
+                    if file_name.starts_with("tinymist-") && file_name != version_dir {
+                        // TODO check if path is dir ?
+                        fs::remove_dir_all(&path).ok();
+                    }
                 }
             }
         }
