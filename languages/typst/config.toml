@@ -11,4 +11,7 @@ brackets = [
     { start = "\"", end = "\"", close = true, newline = false, not_in = [
         "string",
     ] },
+    { start = "*", end = "*", close = false, newline = false, surround = true },
+    { start = "_", end = "_", close = false, newline = false, surround = true },
+    { start = "`", end = "`", close = false, newline = false, surround = true },
 ]
