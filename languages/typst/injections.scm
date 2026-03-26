@@ -1,3 +1,3 @@
 (raw_blck
-	lang: (ident) @language
+  lang: (ident) @language
   (blob) @content)
