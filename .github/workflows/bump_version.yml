@@ -13,7 +13,9 @@ on:
   workflow_dispatch: {}
 jobs:
   determine_bump_type:
-    runs-on: namespace-profile-16x32-ubuntu-2204
+    if: (github.repository_owner == 'zed-industries' || github.repository_owner == 'zed-extensions')
+    runs-on: namespace-profile-2x4-ubuntu-2404
+    permissions: {}
     steps:
     - id: get-bump-type
       name: extensions::bump_version::get_bump_type
@@ -26,7 +28,6 @@ jobs:
             bump_type="patch"
         fi
         echo "bump_type=$bump_type" >> $GITHUB_OUTPUT
-      shell: bash -euxo pipefail {0}
       env:
         HAS_MAJOR_LABEL: |-
           ${{ (github.event.action == 'labeled' && github.event.label.name == 'major') ||
@@ -40,13 +41,21 @@ jobs:
     needs:
     - determine_bump_type
     if: github.event.action != 'labeled' || needs.determine_bump_type.outputs.bump_type != 'patch'
-    uses: zed-industries/zed/.github/workflows/extension_bump.yml@main
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+    uses: zed-industries/zed/.github/workflows/extension_bump.yml@3183c04515a489e394dca8a254304e96dacec62a
     secrets:
       app-id: ${{ secrets.ZED_ZIPPY_APP_ID }}
       app-secret: ${{ secrets.ZED_ZIPPY_APP_PRIVATE_KEY }}
     with:
       bump-type: ${{ needs.determine_bump_type.outputs.bump_type }}
-      force-bump: true
+      force-bump: ${{ github.event_name != 'push' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.ref_name == 'main' && github.sha || 'anysha' }}labels
   cancel-in-progress: true
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}

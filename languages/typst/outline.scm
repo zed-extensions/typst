@@ -1,14 +1,10 @@
-
-
 (heading
-    [
+  [
     "="
     "=="
     "==="
     "===="
     "====="
     "======"
-    ] @context
-
-    (text) @name
-) @item
+  ] @context
+  (text) @name) @item
