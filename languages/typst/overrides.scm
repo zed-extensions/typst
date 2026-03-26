@@ -1,0 +1,3 @@
+(string) @string
+
+(math) @math
