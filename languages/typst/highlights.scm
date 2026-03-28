@@ -1,7 +1,5 @@
 ; Taken from https://github.com/uben0/tree-sitter-typst/blob/f457c77edffd4b93190794355ff5acf7acfb99c6/editors/helix/queries/highlights.scm#L4
 ; Improved by @Gaspartcho
-
-
 ; CONTROL
 (branch
   [
@@ -27,7 +25,6 @@
 (return
   "return" @keyword.control)
 
-
 ; DIRECTIVES
 (import
   "import" @keyword.control.import)
@@ -48,7 +45,6 @@
 
 (let
   "let" @keyword.storage.type)
-
 
 ; OPERATOR
 (in
@@ -101,9 +97,7 @@
   field: (ident) @variable.parameter)
 
 (field
-  field: (_) @property
-)
-
+  field: (_) @property)
 
 ; VALUE
 (ident) @variable
@@ -127,7 +121,6 @@
   "`" @punctuation.delimiter
   (blob) @text.literal)
 
-
 ; MATH
 [
   (label)
@@ -149,18 +142,14 @@
 
 (formula
   (field
-    (ident) @constant
-  )
-)
+    (ident) @constant))
 
 (attach
   (ident) @constant)
 
 (attach
   (field
-    (ident) @constant
-  )
-)
+    (ident) @constant))
 
 (attach
   [
@@ -199,7 +188,7 @@
 (quote) @markup.quote
 
 (code
-	"#" @punctuation.special)
+  "#" @punctuation.special)
 
 (math
   "$" @punctuation.special)
@@ -208,7 +197,6 @@
   (align)
   (linebreak)
 ] @punctuation.special
-
 
 "end" @operator
 
