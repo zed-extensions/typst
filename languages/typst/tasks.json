@@ -1,13 +1,20 @@
 [
 	{
-		"label": "Typst: export file",
+		"label": "Typst: Export File",
 		"command": "typst",
-		"args": ["compile", "\"$ZED_FILE\""],
+		"args": ["compile", "\"$ZED_FILE\""]
 	},
 	{
-		"label": "Typst: watch file",
+		"label": "Typst: Watch File",
 		"command": "typst",
 		"args": ["watch", "\"$ZED_FILE\""],
+		"reveal": "never",
+		"hide": "always"
+	},
+	{
+		"label": "Typst: Open Preview",
+		"command": "xdg-open",
+		"args": ["http://127.0.0.1:23635/"],
 		"reveal": "never",
 		"hide": "always"
 	}
