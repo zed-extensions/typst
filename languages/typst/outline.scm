@@ -1,8 +1,6 @@
 (section
 	(heading
-		.
-		_ @context
-		.
-		(_)+ @name
+		. _ @context
+		. (text) @name
 	)
 ) @item
