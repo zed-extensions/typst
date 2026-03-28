@@ -10,6 +10,7 @@ To register the LSP and enable certain features (such as compile on save), add t
   "tinymist": {
 		"initialization_options": {
 				// Enable background preview
+				// Server will be running on 127.0.0.1:23635
 				"preview": {
 					"background": {
 						"enabled": true,
