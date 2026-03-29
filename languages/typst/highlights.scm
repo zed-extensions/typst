@@ -1,9 +1,6 @@
 ; Taken from https://github.com/uben0/tree-sitter-typst/blob/f457c77edffd4b93190794355ff5acf7acfb99c6/editors/helix/queries/highlights.scm#L4
 ; Improved by @Gaspartcho
 ; CONTROL
-(let
-  "let" @keyword.storage.type)
-
 (branch
   [
     "if"
@@ -19,8 +16,20 @@
     "in"
   ] @keyword.control.repeat)
 
+(flow
+  [
+    "break"
+    "continue"
+  ] @keyword.control)
+
+(return
+  "return" @keyword.control)
+
+; DIRECTIVES
 (import
   "import" @keyword.control.import)
+
+(wildcard) @operator
 
 (as
   "as" @keyword.operator)
@@ -34,14 +43,8 @@
 (set
   "set" @keyword.control)
 
-(return
-  "return" @keyword.control)
-
-(flow
-  [
-    "break"
-    "continue"
-  ] @keyword.control)
+(let
+  "let" @keyword.storage.type)
 
 ; OPERATOR
 (in
@@ -90,70 +93,14 @@
     ">"
   ] @operator)
 
-(fraction
-  "/" @operator)
-
-(fac
-  "!" @operator)
-
-(attach
-  [
-    "^"
-    "_"
-  ] @operator)
-
-(wildcard) @operator
-
 ; VALUE
 (ident) @variable
 
-(raw_blck
-  "```" @punctuation.delimiter
-  (blob) @text.literal)
-
-(raw_blck
-  lang: (ident) @tag)
-
-(raw_span
-  "`" @punctuation.delimiter
-  (blob) @text.literal)
-
-(label) @tag
-
-(ref) @tag
-
-(number) @number
-
-(string) @string
-
-(content
-  [
-    "["
-    "]"
-  ] @operator)
-
-(bool) @boolean
-
-(none) @constant.builtin
-
-(auto) @constant.builtin
-
-; Functions
-(formula
-  (ident) @function.method)
-
-(attach
-  (ident) @function.method)
-
-(formula
-  (field
-    (ident) @function.method))
-
 (tagged
-  field: (ident) @tag)
+  field: (ident) @variable.parameter)
 
 (field
-  field: (ident) @tag)
+  field: (_) @property)
 
 (call
   item: (ident) @function)
@@ -161,6 +108,60 @@
 (call
   item: (field
     field: (ident) @function.method))
+
+; RAW
+(raw_blck
+  "```" @embedded
+  (blob) @text.literal)
+
+(raw_blck
+  lang: (ident) @embedded)
+
+(raw_span
+  "`" @punctuation.delimiter
+  (blob) @text.literal)
+
+; MATH
+[
+  (label)
+  (ref)
+] @label
+
+(number) @number
+
+(string) @string
+
+(bool) @boolean
+
+(none) @constant.builtin
+
+(auto) @constant.builtin
+
+(formula
+  (ident) @constant)
+
+(formula
+  (field
+    (ident) @constant))
+
+(attach
+  (ident) @constant)
+
+(attach
+  (field
+    (ident) @constant))
+
+(attach
+  [
+    "^"
+    "_"
+  ] @operator)
+
+(fraction
+  "/" @operator)
+
+(fac
+  "!" @operator)
 
 ; MARKUP
 (item
@@ -174,7 +175,7 @@
 
 (heading) @title
 
-(url) @tag
+(url) @link_uri
 
 (emph) @emphasis
 
@@ -182,28 +183,32 @@
 
 (symbol) @operator
 
-(shorthand) @constant.builtin
+(shorthand) @operator
 
 (quote) @markup.quote
 
-(align) @operator
-
-(linebreak) @constant.builtin
+(code
+  "#" @punctuation.special)
 
 (math
-  "$" @operator)
+  "$" @punctuation.special)
 
-"#" @operator
+[
+  (align)
+  (linebreak)
+] @punctuation.special
 
 "end" @operator
 
-(escape) @constant.character.escape
+(escape) @string.escape
 
 [
   "("
   ")"
   "{"
   "}"
+  "["
+  "]"
 ] @punctuation.bracket
 
 [
