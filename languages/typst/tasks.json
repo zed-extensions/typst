@@ -2,7 +2,8 @@
 	{
 		"label": "Typst: Export File",
 		"command": "typst",
-		"args": ["compile", "\"$ZED_FILE\""]
+		"args": ["compile", "\"$ZED_FILE\""],
+		"hide": "on_success"
 	},
 	{
 		"label": "Typst: Watch File",
