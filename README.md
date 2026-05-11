@@ -7,7 +7,6 @@ To register the LSP and enable certain features (such as compile on save), add t
 ```jsonc
 // In settings.json
 {
-	// ...
 	"lsp": {
 		"tinymist": {
 			"initialization_options": {
@@ -28,10 +27,16 @@ To register the LSP and enable certain features (such as compile on save), add t
 
 				// Enable formatter
 				"formatterMode": "typstyle",
-	    }
-	  }
-	}
-	// ...
+			}
+		}
+	},
+
+	"languages": {
+		"Typst": {
+			// Enable soft wrap
+			"soft_wrap": "editor_width",
+		},
+	},
 }
 ```
 
