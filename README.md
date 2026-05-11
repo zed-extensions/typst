@@ -33,8 +33,8 @@ To register the LSP and enable certain features (such as compile on save), add t
 
 	"languages": {
 		"Typst": {
-			// Enable soft wrap
-			"soft_wrap": "editor_width",
+			// Disable soft wrap
+			"soft_wrap": "none",
 		},
 	},
 }

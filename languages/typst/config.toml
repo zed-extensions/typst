@@ -4,6 +4,7 @@ path_suffixes = ["typ", "typst"]
 line_comments = ["// "]
 documentation_comment = { start = "/*", prefix = "* ", end = "*/", tab_size = 1 }
 tab_size = 2
+soft_wrap = "editor_width"
 brackets = [
 	{ start = "/*", end = " */", close = true, newline = true, not_in = ["string", "comment"] },
     { start = "(", end = ")", close = true, newline = true },
