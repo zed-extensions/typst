@@ -111,11 +111,11 @@
 
 ; RAW
 (raw_blck
-  "```" @embedded
+  "```" @punctuation.delimiter @embedded
   (blob) @text.literal)
 
 (raw_blck
-  lang: (ident) @embedded)
+  lang: (ident) @tag @embedded)
 
 (raw_span
   "`" @punctuation.delimiter
