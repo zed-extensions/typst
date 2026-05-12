@@ -151,6 +151,9 @@
   (field
     (ident) @constant))
 
+(fraction
+  (ident) @constant)
+
 (attach
   [
     "^"
