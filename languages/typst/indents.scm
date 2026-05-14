@@ -13,3 +13,6 @@
 (_
   "$"
   "$" @end) @indent
+
+((comment) @indent
+  (#match? @indent "^/\\*"))
