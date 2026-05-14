@@ -125,7 +125,7 @@
 [
   (label)
   (ref)
-] @label
+] @tag @label
 
 (number) @number
 
@@ -178,7 +178,7 @@
 
 (heading) @title
 
-(url) @link_uri
+(url) @tag @link_uri
 
 (emph) @emphasis
 
@@ -186,7 +186,7 @@
 
 (symbol) @operator
 
-(shorthand) @operator
+(shorthand) @constant.builtin @operator
 
 (quote) @markup.quote
 
