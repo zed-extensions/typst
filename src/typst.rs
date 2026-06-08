@@ -119,6 +119,31 @@ impl TypstExtension {
     }
 }
 
+fn normalize_tinymist_settings(mut settings: zed::serde_json::Value) -> zed::serde_json::Value {
+    let Some(settings_object) = settings.as_object_mut() else {
+        return settings;
+    };
+
+    if let Some(tinymist_settings) = settings_object
+        .get("tinymist")
+        .and_then(|settings| settings.as_object())
+        .cloned()
+    {
+        for (key, value) in tinymist_settings {
+            settings_object.entry(key).or_insert(value);
+        }
+    }
+
+    if !settings_object.contains_key("tinymist") {
+        settings_object.insert(
+            "tinymist".to_string(),
+            zed::serde_json::Value::Object(settings_object.clone()),
+        );
+    }
+
+    settings
+}
+
 impl zed::Extension for TypstExtension {
     fn new() -> Self {
         Self {
@@ -147,11 +172,16 @@ impl zed::Extension for TypstExtension {
         server_id: &zed_extension_api::LanguageServerId,
         worktree: &zed_extension_api::Worktree,
     ) -> Result<Option<zed_extension_api::serde_json::Value>> {
-        let settings = LspSettings::for_worktree(server_id.as_ref(), worktree)
-            .ok()
-            .and_then(|lsp_settings| lsp_settings.initialization_options.clone())
+        let lsp_settings = LspSettings::for_worktree(server_id.as_ref(), worktree).ok();
+        let initialization_options = lsp_settings
+            .as_ref()
+            .and_then(|lsp_settings| lsp_settings.initialization_options.clone());
+        let settings = lsp_settings.and_then(|lsp_settings| lsp_settings.settings.clone());
+        let options = initialization_options
+            .or(settings)
+            .map(normalize_tinymist_settings)
             .unwrap_or_default();
-        Ok(Some(settings))
+        Ok(Some(options))
     }
 
     fn language_server_workspace_configuration(
@@ -163,8 +193,42 @@ impl zed::Extension for TypstExtension {
             .ok()
             .and_then(|lsp_settings| lsp_settings.settings.clone())
             .unwrap_or_default();
-        Ok(Some(settings))
+        Ok(Some(normalize_tinymist_settings(settings)))
     }
 }
 
 zed::register_extension!(TypstExtension);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use zed::serde_json::json;
+
+    #[test]
+    fn normalizes_flat_tinymist_settings_to_sectioned_settings() {
+        let settings = normalize_tinymist_settings(json!({
+            "exportPdf": "onSave",
+            "outputPath": "$root/$name",
+            "projectResolution": "lockDatabase",
+            "typstExtraArgs": ["main.typ"]
+        }));
+
+        assert_eq!(settings["exportPdf"], "onSave");
+        assert_eq!(settings["tinymist"]["exportPdf"], "onSave");
+        assert_eq!(settings["tinymist"]["typstExtraArgs"], json!(["main.typ"]));
+    }
+
+    #[test]
+    fn normalizes_sectioned_tinymist_settings_to_flat_settings() {
+        let settings = normalize_tinymist_settings(json!({
+            "tinymist": {
+                "exportPdf": "onSave",
+                "typstExtraArgs": ["main.typ"]
+            }
+        }));
+
+        assert_eq!(settings["exportPdf"], "onSave");
+        assert_eq!(settings["typstExtraArgs"], json!(["main.typ"]));
+        assert_eq!(settings["tinymist"]["exportPdf"], "onSave");
+    }
+}

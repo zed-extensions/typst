@@ -9,4 +9,4 @@ crate-type = ["cdylib"]
 path = "src/typst.rs"
 
 [dependencies]
-zed_extension_api = "0.1.0"
+zed_extension_api = "0.7.0"
