@@ -23,7 +23,7 @@ To register the LSP and enable certain features (such as compile on save), add t
 				// Compile on save
 				// This will compile a PDF for the `main.typ` file in the project root.
 				"exportPdf": "onSave",
-				"outputPath": "$root/$name"
+				"outputPath": "$root/$name",
 
 				// Enable formatter
 				"formatterMode": "typstyle",
