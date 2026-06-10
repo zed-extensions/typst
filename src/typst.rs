@@ -53,7 +53,23 @@ impl TypstExtension {
                 require_assets: true,
                 pre_release: false,
             },
-        )?;
+        );
+
+        let release = match release {
+            Ok(r) => r,
+            Err(e) => {
+                if let Ok(path) = fs::read_to_string("latest-binary") {
+                    if fs::metadata(&path).is_ok_and(|stat| stat.is_file()) {
+                        return Ok(TinymistBinary {
+                            path,
+                            args: binary_args,
+                            environment: None,
+                        });
+                    }
+                }
+                return Err(e);
+            }
+        };
 
         let (platform, arch) = zed::current_platform();
         let mut asset_name = format!(
@@ -108,6 +124,8 @@ impl TypstExtension {
                     fs::remove_dir_all(entry.path()).ok();
                 }
             }
+
+            let _ = fs::write("latest-binary", &binary_path);
         }
 
         self.cached_binary_path = Some(binary_path.clone());
