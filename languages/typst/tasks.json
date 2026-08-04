@@ -13,9 +13,32 @@
 		"hide": "always"
 	},
 	{
+		// Fallback for when tinymist's `preview.background` is not workable: that
+		// preview follows whichever document the language server saw opened last,
+		// so a second open .typ file steals it, and it dies whenever Zed restarts
+		// the language server. This process is bound to one file and independent
+		// of the server, but renders the file on disk, so it needs autosave.
+		// Disable `preview.background` before using it — both want port 23635.
+		"label": "Typst: Preview This File",
+		"command": "tinymist",
+		"args": [
+			"preview",
+			"--data-plane-host=127.0.0.1:23635",
+			"--open",
+			"--root",
+			"\"$ZED_WORKTREE_ROOT\"",
+			"\"$ZED_FILE\""
+		],
+		"allow_concurrent_runs": false
+	},
+	{
+		// Open the preview page served by either of the two options above.
 		"label": "Typst: Open Preview",
-		"command": "xdg-open",
-		"args": ["http://127.0.0.1:23635/"],
+		"command": "sh",
+		"args": [
+			"-c",
+			"'url=http://127.0.0.1:23635/; if command -v open > /dev/null 2>&1; then open \"$url\"; elif command -v xdg-open > /dev/null 2>&1; then xdg-open \"$url\"; else printf \"Open %s in your browser\\n\" \"$url\"; fi'"
+		],
 		"reveal": "never",
 		"hide": "always"
 	}

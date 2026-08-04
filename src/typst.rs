@@ -12,6 +12,14 @@ struct TinymistBinary {
     environment: Option<Vec<(String, String)>>,
 }
 
+/// Report absent LSP settings as an empty object rather than `null`.
+/// `Value::default()` is `Value::Null`, so unconfigured worktrees used to send
+/// `"settings": null` in `workspace/didChangeConfiguration`. Current tinymist
+/// tolerates that, but the spec expects an object and other servers may not.
+fn empty_object() -> zed::serde_json::Value {
+    zed::serde_json::Value::Object(Default::default())
+}
+
 impl TypstExtension {
     fn language_server_binary(
         &mut self,
@@ -168,7 +176,7 @@ impl zed::Extension for TypstExtension {
         let settings = LspSettings::for_worktree(server_id.as_ref(), worktree)
             .ok()
             .and_then(|lsp_settings| lsp_settings.initialization_options.clone())
-            .unwrap_or_default();
+            .unwrap_or_else(empty_object);
         Ok(Some(settings))
     }
 
@@ -180,7 +188,7 @@ impl zed::Extension for TypstExtension {
         let settings = LspSettings::for_worktree(server_id.as_ref(), worktree)
             .ok()
             .and_then(|lsp_settings| lsp_settings.settings.clone())
-            .unwrap_or_default();
+            .unwrap_or_else(empty_object);
         Ok(Some(settings))
     }
 }
