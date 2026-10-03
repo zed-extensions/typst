@@ -1,5 +1,5 @@
 use std::fs;
-use zed_extension_api::{self as zed, settings::LspSettings, Result};
+use zed_extension_api::{self as zed, serde_json::Value, settings::LspSettings, Result, Worktree};
 
 struct TypstExtension {
     cached_binary_path: Option<String>,
@@ -167,7 +167,11 @@ impl zed::Extension for TypstExtension {
     ) -> Result<Option<zed_extension_api::serde_json::Value>> {
         let settings = LspSettings::for_worktree(server_id.as_ref(), worktree)
             .ok()
-            .and_then(|lsp_settings| lsp_settings.initialization_options.clone())
+            .and_then(|lsp_settings| {
+                lsp_settings
+                    .initialization_options
+                    .map(|options| substitute_paths(options, worktree))
+            })
             .unwrap_or_default();
         Ok(Some(settings))
     }
@@ -179,9 +183,34 @@ impl zed::Extension for TypstExtension {
     ) -> Result<Option<zed_extension_api::serde_json::Value>> {
         let settings = LspSettings::for_worktree(server_id.as_ref(), worktree)
             .ok()
-            .and_then(|lsp_settings| lsp_settings.settings.clone())
+            .and_then(|lsp_settings| {
+                lsp_settings
+                    .settings
+                    .map(|settings| substitute_paths(settings, worktree))
+            })
             .unwrap_or_default();
         Ok(Some(settings))
+    }
+}
+
+/// Recursively inject worktree root "variable" into string values when found.
+/// Other [task variables](https://zed.dev/docs/tasks#variables) and
+/// `${ZED_WORKTREE_ROOT:default}` syntax are unsupported.
+fn substitute_paths(value: Value, worktree: &Worktree) -> Value {
+    match value {
+        Value::String(s) => Value::String(
+            s.replace("$ZED_WORKTREE_ROOT", &worktree.root_path())
+                .replace("${ZED_WORKTREE_ROOT}", &worktree.root_path()),
+        ),
+        Value::Array(values) => values
+            .into_iter()
+            .map(|v| substitute_paths(v, worktree))
+            .collect(),
+        Value::Object(map) => map
+            .into_iter()
+            .map(|(k, v)| (k, substitute_paths(v, worktree)))
+            .collect(),
+        other => other,
     }
 }
 
