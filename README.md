@@ -27,6 +27,20 @@ To register the LSP and enable certain features (such as compile on save), add t
 
 				// Enable formatter
 				"formatterMode": "typstyle",
+
+				// For settings that require an absolute path, $ZED_WORKTREE_ROOT will 
+				// be subsituted. Other variables like Zed tasks are unsupported.
+				"preview": {
+					"browsing": {
+						"args": [
+							"--data-plane-host=127.0.0.1:0",
+							"--control-plane-host=127.0.0.1:0",
+							"--invert-colors=never",
+							"--open",
+							"$ZED_WORKTREE_ROOT/main.typ"
+						],
+					},
+				},
 			}
 		}
 	},
