@@ -13,6 +13,38 @@
 		"hide": "always"
 	},
 	{
+		// Live preview inside Zed: keeps the first page of the current document
+		// rendered to `<document>.preview.png` right next to it. Open that file
+		// with "Typst: Open Preview in Zed" once — Zed's image viewer reloads it on
+		// every change, so the tab stays in sync while you type.
+		"label": "Typst: Preview in Zed",
+		"command": "typst",
+		"args": [
+			"watch",
+			"--format",
+			"png",
+			"--ppi",
+			"144",
+			"--pages",
+			"1",
+			"\"$ZED_FILE\"",
+			"\"$ZED_DIRNAME/$ZED_STEM.preview.png\""
+		],
+		"reveal": "never",
+		"hide": "always",
+		"use_new_terminal": false,
+		// Cancel the previous watcher instead of queueing behind it when the
+		// task is spawned again.
+		"allow_concurrent_runs": true
+	},
+	{
+		"label": "Typst: Open Preview in Zed",
+		"command": "zed",
+		"args": ["--add", "\"$ZED_DIRNAME/$ZED_STEM.preview.png\""],
+		"reveal": "never",
+		"hide": "on_success"
+	},
+	{
 		"label": "Typst: Open Preview",
 		"command": "xdg-open",
 		"args": ["http://127.0.0.1:23635/"],
